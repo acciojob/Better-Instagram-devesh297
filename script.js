@@ -1,31 +1,33 @@
 const images = document.querySelectorAll(".image");
 let draggedElement = null;
 
+
 images.forEach((image) => {
-  image.addEventListener("dragstart", function (e) {
-    draggedElement = this;
-    setTimeout(() => (this.style.visibility = "hidden"), 0);
+
+  image.addEventListener("dragstart", (e) => {
+    draggedElement = e.target; // Store the dragged element
+    e.dataTransfer.setData("text/plain", e.target.id);
+    e.target.classList.add("dragging"); // Add a dragging class
   });
 
-  image.addEventListener("dragover", function (e) {
-    e.preventDefault();
+  // When dragging over another image
+  image.addEventListener("dragover", (e) => {
+    e.preventDefault(); // Allow dropping
   });
 
-  image.addEventListener("drop", function (e) {
+  // When dropped on another image
+  image.addEventListener("drop", (e) => {
     e.preventDefault();
+    const targetElement = e.target;
 
-    if (draggedElement !== this) {
-      // Swap contents
-      let temp = this.innerHTML;
-      this.innerHTML = draggedElement.innerHTML;
-      draggedElement.innerHTML = temp;
+    // Swap inner text (or you can swap background images)
+    if (draggedElement && targetElement !== draggedElement) {
+      let temp = draggedElement.innerHTML;
+      draggedElement.innerHTML = targetElement.innerHTML;
+      targetElement.innerHTML = temp;
     }
 
-    draggedElement.style.visibility = "visible";
-    draggedElement = null;
-  });
-
-  image.addEventListener("dragend", function () {
-    this.style.visibility = "visible";
+    draggedElement.classList.remove("dragging"); // Remove dragging class
+    draggedElement = null; // Reset
   });
 });
