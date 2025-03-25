@@ -1,33 +1,36 @@
 const images = document.querySelectorAll(".image");
 let draggedElement = null;
 
-
 images.forEach((image) => {
 
   image.addEventListener("dragstart", (e) => {
-    draggedElement = e.target; // Store the dragged element
+    draggedElement = e.target;
     e.dataTransfer.setData("text/plain", e.target.id);
-    e.target.classList.add("dragging"); // Add a dragging class
+    e.target.classList.add("dragging");
   });
 
-  // When dragging over another image
   image.addEventListener("dragover", (e) => {
-    e.preventDefault(); // Allow dropping
+    e.preventDefault();
   });
 
-  // When dropped on another image
   image.addEventListener("drop", (e) => {
     e.preventDefault();
-    const targetElement = e.target;
+    
+    if (!draggedElement || draggedElement === e.target) return;
 
-    // Swap inner text (or you can swap background images)
-    if (draggedElement && targetElement !== draggedElement) {
-      let temp = draggedElement.innerHTML;
-      draggedElement.innerHTML = targetElement.innerHTML;
-      targetElement.innerHTML = temp;
+    // Swap background images
+    let tempBackground = draggedElement.style.backgroundImage;
+    draggedElement.style.backgroundImage = e.target.style.backgroundImage;
+    e.target.style.backgroundImage = tempBackground;
+
+    draggedElement.classList.remove("dragging");
+    draggedElement = null;
+  });
+
+  image.addEventListener("dragend", () => {
+    if (draggedElement) {
+      draggedElement.classList.remove("dragging");
     }
-
-    draggedElement.classList.remove("dragging"); // Remove dragging class
-    draggedElement = null; // Reset
+    draggedElement = null;
   });
 });
